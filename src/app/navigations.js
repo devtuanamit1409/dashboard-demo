@@ -1,6 +1,6 @@
 const navigations = [
   { name: "Dashboard", path: "/dashboard/default", icon: "dashboard" },
-  { label: "PAGES", type: "label" },
+
   {
     name: "Session/Auth",
     icon: "security",
@@ -11,7 +11,6 @@ const navigations = [
       { name: "Error", iconText: "404", path: "/session/404" }
     ]
   },
-  { label: "Components", type: "label" },
   {
     name: "Components",
     icon: "favorite",
