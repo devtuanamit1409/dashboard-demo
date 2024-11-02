@@ -85,37 +85,37 @@ export default function MatxVerticalNav({ items }) {
 
   const renderLevels = (data) => {
     return data.map((item, index) => {
-      if (item.type === "label")
-        return (
-          <ListLabel key={index} mode={mode} className="sidenavHoverShow">
-            {item.label}
-          </ListLabel>
-        );
+      const { attributes } = item;
+      const { name, path, icon, children } = attributes;
 
-      if (item.children) {
+      if (children && children.length > 0) {
         return (
-          <MatxVerticalNavExpansionPanel mode={mode} item={item} key={index}>
-            {renderLevels(item.children)}
+          <MatxVerticalNavExpansionPanel mode={mode} item={{ name, icon }} key={index}>
+            {renderLevels(
+              children.map((child) => ({
+                ...child,
+                attributes: child // Đảm bảo cấu trúc dữ liệu tương tự như từ API
+              }))
+            )}
           </MatxVerticalNavExpansionPanel>
         );
       } else if (item.type === "extLink") {
         return (
           <ExternalLink
             key={index}
-            href={item.path}
+            href={path}
             className={`${mode === "compact" && "compactNavItem"}`}
             rel="noopener noreferrer"
-            target="_blank">
-            <ButtonBase key={item.name} name="child" sx={{ width: "100%" }}>
-              {(() => {
-                if (item.icon) {
-                  return <Icon className="icon">{item.icon}</Icon>;
-                } else {
-                  return <span className="item-icon icon-text">{item.iconText}</span>;
-                }
-              })()}
+            target="_blank"
+          >
+            <ButtonBase key={name} name="child" sx={{ width: "100%" }}>
+              {icon ? (
+                <Icon className="icon">{icon}</Icon>
+              ) : (
+                <span className="item-icon icon-text">{item.iconText}</span>
+              )}
               <StyledText mode={mode} className="sidenavHoverShow">
-                {item.name}
+                {name}
               </StyledText>
               <Box mx="auto"></Box>
               {item.badge && <BadgeValue>{item.badge.value}</BadgeValue>}
@@ -126,16 +126,17 @@ export default function MatxVerticalNav({ items }) {
         return (
           <InternalLink key={index}>
             <NavLink
-              to={item.path}
+              to={path || "#"}
               className={({ isActive }) =>
                 isActive
                   ? `navItemActive ${mode === "compact" && "compactNavItem"}`
                   : `${mode === "compact" && "compactNavItem"}`
-              }>
-              <ButtonBase key={item.name} name="child" sx={{ width: "100%" }}>
-                {item?.icon ? (
+              }
+            >
+              <ButtonBase key={name} name="child" sx={{ width: "100%" }}>
+                {icon ? (
                   <Icon className="icon" sx={{ width: 36 }}>
-                    {item.icon}
+                    {icon}
                   </Icon>
                 ) : (
                   <Fragment>
@@ -149,13 +150,14 @@ export default function MatxVerticalNav({ items }) {
                         ml: "20px",
                         fontSize: "11px",
                         display: mode !== "compact" && "none"
-                      }}>
+                      }}
+                    >
                       {item.iconText}
                     </Box>
                   </Fragment>
                 )}
                 <StyledText mode={mode} className="sidenavHoverShow">
-                  {item.name}
+                  {name}
                 </StyledText>
 
                 <Box mx="auto" />

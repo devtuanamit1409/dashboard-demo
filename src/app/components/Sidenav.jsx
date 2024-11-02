@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Fragment } from "react";
 import Scrollbar from "react-perfect-scrollbar";
 import styled from "@mui/material/styles/styled";
@@ -27,6 +28,23 @@ const SideNavMobile = styled("div")(({ theme }) => ({
 
 export default function Sidenav({ children }) {
   const { settings, updateSettings } = useSettings();
+  const [data, setData] = useState([]);
+
+  const getData = async () => {
+    const res = await fetch(`${import.meta.env.VITE_URL_BE}/api/navigations?populate=children`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`
+      }
+    });
+
+    const data = await res.json();
+    setData(data.data);
+  };
+  useEffect(() => {
+    getData();
+  }, []);
 
   const updateSidebarMode = (sidebarSettings) => {
     let activeLayoutSettingsName = settings.activeLayout + "Settings";
@@ -45,7 +63,7 @@ export default function Sidenav({ children }) {
     <Fragment>
       <StyledScrollBar options={{ suppressScrollX: true }}>
         {children}
-        <MatxVerticalNav items={navigations} />
+        <MatxVerticalNav items={data} />
       </StyledScrollBar>
 
       <SideNavMobile onClick={() => updateSidebarMode({ mode: "close" })} />
